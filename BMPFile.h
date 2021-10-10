@@ -7,10 +7,9 @@ typedef struct {
 
 typedef struct {
   uint32_t FileSize;
-  uint16_t Reserved1;
-  uint16_t Reserved2;
+  uint32_t Reserved;
   uint32_t OffBits;
-} BMPFileheader;
+} BMPFileHeader;
 
 typedef struct {
   uint32_t HeaderSize;
@@ -29,18 +28,17 @@ typedef struct {
 void createImage(const char* name, uint32_t ImageWidth, uint32_t ImageHeight) {
   // init structs
   BMPSignature BMP_S;
-  BMPFileheader BMP_FH;
+  BMPFileHeader BMP_FH;
   BMPImageHeader BMP_IH;
 
   BMP_S.Type[0] = 'B';
   BMP_S.Type[1] = 'M';
 
   // calculate padding
-  uint8_t padding = ImageWidth % 4;
+  uint8_t padding = (ImageWidth * 3) % 4;
 
-  BMP_FH.FileSize = (ImageWidth + padding) * ImageHeight * 3 + 54;
-  BMP_FH.Reserved1 = 0;
-  BMP_FH.Reserved2 = 0;
+  BMP_FH.FileSize = (ImageWidth * 3 + padding) * ImageHeight + 54;
+  BMP_FH.Reserved = 0;
   BMP_FH.OffBits = 54;
 
   BMP_IH.HeaderSize = 40;
@@ -76,7 +74,7 @@ void createImage(const char* name, uint32_t ImageWidth, uint32_t ImageHeight) {
       green = 255 * x * y / (ImageHeight * ImageWidth);
 
       if(x < ImageWidth * 0.8 && x > ImageWidth * 0.2) {
-        if(y < ImageHeight * 0.7 && y > ImageHeight * 0.3) {
+        if(y < ImageHeight * 0.6 && y > ImageHeight * 0.4) {
           blue = 255 * x / ImageWidth;
           red = 255 * y / ImageHeight;
         }
@@ -92,7 +90,6 @@ void createImage(const char* name, uint32_t ImageWidth, uint32_t ImageHeight) {
       }
     }
   }
-
-  // close file
+  // close File
   fclose(nFile);
 }
